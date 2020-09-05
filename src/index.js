@@ -1,17 +1,36 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { Provider } from 'react-redux';
+import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles'
+import { ConnectedRouter } from 'react-router-redux'
+// import createBreakpoints from '@material-ui/core/styles/createBreakpoints'
+import { persistStore } from 'redux-persist'
+// import storage from 'redux-persist/lib/storage'
+import { PersistGate } from 'redux-persist/integration/react'
+import App from './App'
+import { createBrowserHistory } from 'history'
+import './index.css'
+import createStore from './createStore'
+
+const history = createBrowserHistory()
+const store = createStore(history)
+const persistor = persistStore(store);
+
+const theme = createMuiTheme({
+  typography: {
+    useNextVariants: true,
+  },
+})
 
 ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
+  <MuiThemeProvider theme={theme}>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <ConnectedRouter history={history}>
+          <App />
+        </ConnectedRouter>
+      </PersistGate>
+    </Provider>,
+  </MuiThemeProvider>,
   document.getElementById('root')
-);
-
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+)
